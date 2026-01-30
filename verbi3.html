@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Allenatore verbi latini - Fixed Edition</title>
+    <style>
+        :root {
+            --primary: #3498db;
+            --secondary: #8e44ad;
+            --dark: #2c3e50;
+            --success: #27ae60;
+            --error: #e74c3c;
+        }
+        body { font-family: 'Segoe UI', sans-serif; background-color: #f0f2f5; margin: 0; padding: 20px; color: var(--dark); }
+        h1 { text-align: center; margin-bottom: 30px; }
+
+        .main-wrapper { 
+            display: flex; 
+            gap: 20px; 
+            width: 100%; 
+            max-width: 1800px; 
+            margin: 0 auto; 
+        }
+
+        .column { flex: 1; display: flex; flex-direction: column; gap: 20px; }
+
+        .container { 
+            background: white; 
+            padding: 25px; 
+            border-radius: 15px; 
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1); 
+            height: 100%;
+            position: relative;
+        }
+
+        .stats {
+            font-size: 0.85em;
+            color: #7f8c8d;
+            text-align: right;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .setup-box { 
+            background: #e3f2fd; 
+            padding: 15px; 
+            border-radius: 10px; 
+            border: 1px solid #bbdefb; 
+            margin-bottom: 15px; 
+        }
+        .filter-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+        
+        .verb-box { 
+            background: var(--dark); 
+            color: white; 
+            padding: 20px; 
+            text-align: center; 
+            font-size: 2.2em; 
+            font-weight: bold; 
+            border-radius: 10px 10px 0 0; 
+            min-height: 50px;
+        }
+        .desc-box { 
+            background: #f8f9fa; 
+            border: 2px dashed #bdc3c7; 
+            padding: 20px; 
+            border-radius: 10px 10px 0 0; 
+            text-align: center; 
+            font-size: 1.25em;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .paradigm-box { 
+            background: #34495e; 
+            color: #bdc3c7; 
+            padding: 10px; 
+            text-align: center; 
+            font-style: italic; 
+            font-size: 0.9em; 
+            border-radius: 0 0 10px 10px; 
+            margin-bottom: 20px; 
+        }
+
+        .quiz-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 0.85em; }
+        
+        select, button, textarea, input { 
+            width: 100%; padding: 12px; border-radius: 6px; 
+            border: 1px solid #ccc; font-size: 1em; box-sizing: border-box; 
+        }
+
+        button { cursor: pointer; border: none; font-weight: bold; transition: 0.3s; color: white; }
+        .btn-gen { background: var(--primary); margin-top: 5px; }
+        .btn-check { background: var(--success); margin-top: 15px; font-size: 1.1em; }
+        
+        textarea { resize: none; margin-top: 15px; text-align: center; font-weight: bold; background: #fff; border: 1px solid #eee; overflow: hidden; }
+        .input-ans { margin-top: 10px; font-size: 1.3em; text-align: center; border: 2px solid var(--secondary); outline: none; }
+
+        h2 { margin-top: 0; text-align: center; color: var(--dark); border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        .dots { text-align: center; color: #bdc3c7; margin-top: 5px; letter-spacing: 5px; }
+    </style>
+</head>
+<body>
+
+<h1>Allenatore verbi latini</h1>
+
+<div class="main-wrapper">
+    <div class="column" id="colA">
+        <div class="container">
+            <h2>1. Analisi grammaticale</h2>
+            <div class="stats" id="statsA">Risposte: 0 / 0</div>
+            <div class="setup-box">
+                <div class="filter-grid">
+                    <div><label>Coniugazione:</label>
+                        <select id="fConA">
+                            <option value="tutte">Tutte</option>
+                            <option value="sum">Sum</option>
+                            <option value="prima">1ª</option>
+                            <option value="seconda">2ª</option>
+                            <option value="terza">3ª</option>
+                            <option value="mista">3ª in -io</option>
+                            <option value="quarta">4ª</option>
+                            <option value="irregolari">Atematici (eo, fero)</option>
+                        </select>
+                    </div>
+                    <div><label>Diatesi:</label><select id="fDiaA"><option value="entrambe">Entrambe</option><option value="attivo">Attivo</option><option value="passivo">Passivo</option></select></div>
+                </div>
+                <button class="btn-gen" onclick="nuovaAnalisi()">GENERA</button>
+            </div>
+            <div class="verb-box" id="dispVerbA">---</div>
+            <div class="paradigm-box" id="dispParaA">Paradigma: ---</div>
+            <div class="quiz-grid">
+                <div><label>Diatesi:</label><select id="rDiaA"><option value="na">N/A</option><option value="attivo">Attivo</option><option value="passivo">Passivo</option></select></div>
+                <div><label>Modo:</label><select id="rModA" onchange="checkFieldsA()"><option value="">-- Scegli --</option><option value="indicativo">Indicativo</option><option value="congiuntivo">Congiuntivo</option><option value="imperativo">Imperativo</option><option value="infinito">Infinito</option></select></div>
+                <div><label>Tempo:</label><select id="rTemA"><option value="na">N/A</option><option value="presente">Presente</option><option value="imperfetto">Imperfetto</option><option value="futuro">Futuro</option><option value="perfetto">Perfetto</option><option value="piuccheperfetto">Piuccheperfetto</option><option value="futuro anteriore">Futuro Ant.</option></select></div>
+                <div><label>Persona:</label><select id="rPerA">
+                    <option value="na">N/A</option>
+                    <option value="1s">1ª p. s.</option><option value="2s">2ª p. s.</option><option value="3s">3ª p. s.</option>
+                    <option value="1p">1ª p. pl.</option><option value="2p">2ª p. pl.</option><option value="3p">3ª p. pl.</option>
+                </select></div>
+            </div>
+            <button class="btn-check" onclick="validaAnalisi()">CONTROLLA</button>
+            <div class="dots">...</div>
+            <textarea id="esitoA" rows="1" readonly></textarea>
+        </div>
+    </div>
+
+    <div class="column" id="colP">
+        <div class="container">
+            <h2>2. Produzione forme verbali</h2>
+            <div class="stats" id="statsP">Risposte: 0 / 0</div>
+            <div class="setup-box">
+                <div class="filter-grid">
+                    <div><label>Coniugazione:</label>
+                        <select id="fConP">
+                            <option value="tutte">Tutte</option>
+                            <option value="sum">Sum</option>
+                            <option value="prima">1ª</option>
+                            <option value="seconda">2ª</option>
+                            <option value="terza">3ª</option>
+                            <option value="mista">3ª in -io</option>
+                            <option value="quarta">4ª</option>
+                            <option value="irregolari">Atematici (eo, fero)</option>
+                        </select>
+                    </div>
+                    <div><label>Diatesi:</label><select id="fDiaP"><option value="entrambe">Entrambe</option><option value="attivo">Attivo</option><option value="passivo">Passivo</option></select></div>
+                </div>
+                <button class="btn-gen" style="background: var(--secondary);" onclick="nuovaProduzione()">GENERA</button>
+            </div>
+            <div class="desc-box" id="descP">...</div>
+            <div class="paradigm-box" id="dispParaP">Paradigma: ---</div>
+            <label>Scrivi la forma latina corretta (puoi ignorare gli accenti):</label>
+            <input type="text" id="inputP" class="input-ans" placeholder="..." autocomplete="off">
+            <button class="btn-check" style="background: var(--secondary);" onclick="validaProduzione()">CONTROLLA</button>
+            <div class="dots">...</div>
+            <textarea id="esitoP" rows="1" readonly></textarea>
+        </div>
+    </div>
+</div>
+
+<script>
+const labelsPersona = { "1s": "1ª p. s.", "2s": "2ª p. s.", "3s": "3ª p. s.", "1p": "1ª p. pl.", "2p": "2ª p. pl.", "3p": "3ª p. pl.", "na": "" };
+const coniugazioni = {
+    sum: [{ pres1: "sum", pres2: "ĕs", perfetto: "fŭī", supino: "fŭtūrŭm", infinito: "essĕ", coniugazione: "sum" }],
+    prima: [{ pres1: "ămō", pres2: "ămās", perfetto: "ămāvī", supino: "ămātŭm", infinito: "ămārĕ", coniugazione: "prima" }],
+    seconda: [{ pres1: "mŏnĕō", pres2: "mŏnēs", perfetto: "mŏnŭī", supino: "mŏnĭtŭm", infinito: "mŏnērĕ", coniugazione: "seconda" }],
+    terza: [{ pres1: "lĕgō", pres2: "lĕgĭs", perfetto: "lēgī", supino: "lēctŭm", infinito: "lĕgĕrĕ", coniugazione: "terza" }],
+    mista: [{ pres1: "căpĭō", pres2: "căpĭs", perfetto: "cēpī", supino: "căptŭm", infinito: "căpĕrĕ", coniugazione: "mista" }],
+    quarta: [{ pres1: "audĭō", pres2: "audīs", perfetto: "audīvī", supino: "audītŭm", infinito: "audīrĕ", coniugazione: "quarta" }],
+    irregolari: [
+        { pres1: "ĕō", pres2: "īs", perfetto: "īvī", supino: "ĭtŭm", infinito: "īrĕ", coniugazione: "atematico" },
+        { pres1: "fĕrō", pres2: "fĕrs", perfetto: "tŭlī", supino: "lātŭm", infinito: "fĕrrĕ", coniugazione: "atematico" }
+    ]
+};
+
+let stats = {
+    A: { esatte: 0, totali: 0, indovinati: new Set() },
+    P: { esatte: 0, totali: 0, indovinati: new Set() }
+};
+
+let sfidaA = null, sfidaP = null;
+
+function rimuoviQuantita(testo) {
+    if(!testo) return "";
+    return testo.normalize("NFD")
+        .replace(/[\u0304\u0306]/g, "")
+        .replace(/ā/g, "a").replace(/ē/g, "e").replace(/ī/g, "i").replace(/ō/g, "o").replace(/ū/g, "u")
+        .replace(/ă/g, "a").replace(/ĕ/g, "e").replace(/ĭ/g, "i").replace(/ŏ/g, "o").replace(/ŭ/g, "u");
+}
+
+function coniuga_sum(modo, tempo, persona) {
+    const pIdx = ["1s", "2s", "3s", "1p", "2p", "3p"].indexOf(persona);
+    if (modo === "infinito") {
+        if (tempo === "presente") return "essĕ";
+        if (tempo === "perfetto") return "fŭissĕ";
+        if (tempo === "futuro") return "fŭtūrŭm essĕ";
+    }
+    if (modo === "indicativo") {
+        if (tempo === "presente") return ["sum", "ĕs", "est", "sŭmŭs", "estĭs", "sunt"][pIdx];
+        if (tempo === "imperfetto") return ["ĕrăm", "ĕrās", "ĕrăt", "ĕrāmŭs", "ĕrātĭs", "ĕrant"][pIdx];
+        if (tempo === "futuro") return ["ĕrō", "ĕrĭs", "ĕrĭt", "ĕrĭmŭs", "ĕrĭtĭs", "ĕrunt"][pIdx];
+        if (tempo === "perfetto") return ["fŭī", "fŭistī", "fŭĭt", "fŭĭmŭs", "fŭistĭs", "fŭērunt"][pIdx];
+        if (tempo === "piuccheperfetto") return ["fŭĕrăm", "fŭĕrās", "fŭĕrăt", "fŭĕrāmŭs", "fŭĕrātĭs", "fŭĕrant"][pIdx];
+        if (tempo === "futuro anteriore") return ["fŭĕrō", "fŭĕrĭs", "fŭĕrĭt", "fŭĕrĭmŭs", "fŭĕrĭtĭs", "fŭĕrint"][pIdx];
+    }
+    if (modo === "congiuntivo") {
+        if (tempo === "presente") return ["sĭm", "sīs", "sĭt", "sīmŭs", "sītĭs", "sint"][pIdx];
+        if (tempo === "imperfetto") return ["essĕm", "essēs", "essĕt", "essēmŭs", "essētĭs", "essent"][pIdx];
+        if (tempo === "perfetto") return ["fŭĕrĭm", "fŭĕrĭs", "fŭĕrĭt", "fŭĕrĭmŭs", "fŭĕrĭtĭs", "fŭĕrint"][pIdx];
+        if (tempo === "piuccheperfetto") return ["fŭissĕm", "fŭissēs", "fŭissĕt", "fŭissēmŭs", "fŭissētĭs", "fŭissent"][pIdx];
+    }
+    if (modo === "imperativo") {
+        if (tempo === "presente") return (persona === "2s") ? "ĕs" : "estĕ";
+        if (tempo === "futuro") return ["", "estō", "estō", "", "estōtĕ", "suntō"][pIdx];
+    }
+    return "N/A";
+}
+
+function coniuga_terza_io(v, modo, tempo, persona, diatesi) {
+    const pIdx = ["1s", "2s", "3s", "1p", "2p", "3p"].indexOf(persona);
+    if (modo === "indicativo") {
+        if (tempo === "presente") {
+            return diatesi === "attivo" 
+                ? ["căpĭō", "căpĭs", "căpĭt", "căpĭmŭs", "căpĭtĭs", "căpĭunt"][pIdx] 
+                : ["căpĭŏr", "căpĕrĭs", "căpĭtŭr", "căpĭmŭr", "căpĭmĭnī", "căpĭuntŭr"][pIdx];
+        }
+        if (tempo === "imperfetto") {
+            return diatesi === "attivo"
+                ? ["căpĭēbăm", "căpĭēbās", "căpĭēbăt", "căpĭēbāmŭs", "căpĭēbātĭs", "căpĭēbant"][pIdx]
+                : ["căpĭēbăr", "căpĭēbārĭs", "căpĭēbātŭr", "căpĭēbāmŭr", "căpĭēbāmĭnī", "căpĭēbantŭr"][pIdx];
+        }
+        if (tempo === "futuro") {
+            return diatesi === "attivo"
+                ? ["căpĭăm", "căpĭēs", "căpĭĕt", "căpĭēmŭs", "căpĭētĭs", "căpĭent"][pIdx]
+                : ["căpĭăr", "căpĭērĭs", "căpĭētŭr", "căpĭēmŭr", "căpĭēmĭnī", "căpĭentŭr"][pIdx];
+        }
+    }
+    if (modo === "congiuntivo" && tempo === "presente") {
+        return diatesi === "attivo"
+            ? ["căpĭăm", "căpĭās", "căpĭăt", "căpĭāmŭs", "căpĭātĭs", "căpĭant"][pIdx]
+            : ["căpĭăr", "căpĭārĭs", "căpĭātŭr", "căpĭāmŭr", "căpĭāmĭnī", "căpĭantŭr"][pIdx];
+    }
+    return coniuga(v, modo, tempo, persona, diatesi);
+}
+
+function coniuga_atematici(v, modo, tempo, persona, diatesi) {
+    const pIdx = ["1s", "2s", "3s", "1p", "2p", "3p"].indexOf(persona);
+    if (v.pres1 === "ĕō") {
+        if (modo === "indicativo") {
+            if (tempo === "presente") return ["ĕō", "īs", "ĭt", "īmŭs", "ītĭs", "ĕunt"][pIdx];
+            if (tempo === "imperfetto") return ["ībăm", "ībās", "ībăt", "ībāmŭs", "ībātĭs", "ībant"][pIdx];
+            if (tempo === "futuro") return ["ībō", "ībĭs", "ībĭt", "ībĭmŭs", "ībĭtĭs", "ībunt"][pIdx];
+        }
+        if (modo === "congiuntivo" && tempo === "presente") return ["ĕăm", "ĕās", "ĕăt", "ĕāmŭs", "ĕātĭs", "ĕant"][pIdx];
+        if (modo === "congiuntivo" && tempo === "imperfetto") return ["īrĕm", "īrēs", "īrĕt", "īrēmŭs", "īrētĭs", "īrent"][pIdx];
+    }
+    if (v.pres1 === "fĕrō") {
+        if (modo === "indicativo" && tempo === "presente") {
+            return diatesi === "attivo" 
+                ? ["fĕrō", "fĕrs", "fĕrt", "fĕrĭmŭs", "fĕrtĭs", "fĕrunt"][pIdx]
+                : ["fĕrŏr", "fĕrrĭs", "fĕrtŭr", "fĕrĭmŭr", "fĕrĭmĭnī", "fĕruntŭr"][pIdx];
+        }
+        if (modo === "congiuntivo" && tempo === "imperfetto") {
+            return diatesi === "attivo"
+                ? ["fĕrrĕm", "fĕrrēs", "fĕrrĕt", "fĕrrēmŭs", "fĕrrētĭs", "fĕrrent"][pIdx]
+                : ["fĕrrĕr", "fĕrrērĭs", "fĕrrētŭr", "fĕrrēmŭr", "fĕrrēmĭnī", "fĕrrĕntŭr"][pIdx];
+        }
+    }
+    return coniuga(v, modo, tempo, persona, diatesi);
+}
+
+function coniuga(v, modo, tempo, persona, diatesi) {
+    const c = v.coniugazione;
+    const pIdx = ["1s", "2s", "3s", "1p", "2p", "3p"].indexOf(persona);
+    const rPres = v.infinito.slice(0, -3), rPerf = v.perfetto.slice(0, -1), rSupRoot = v.supino.slice(0, -2);
+    
+    if (diatesi === "passivo" && ["perfetto", "piuccheperfetto", "futuro anteriore"].includes(tempo)) {
+        if (modo === "infinito") return rSupRoot + "ŭm essĕ";
+        const part = rSupRoot + (persona.includes("s") ? "ŭs" : "ī");
+        const aus = {
+            indicativo: { perfetto: ["sum","ĕs","est","sŭmŭs","estĭs","sunt"], piuccheperfetto: ["ĕrăm","ĕrās","ĕrăt","ĕrāmŭs","ĕrātĭs","ĕrant"], "futuro anteriore": ["ĕrō","ĕrĭs","ĕrĭt","ĕrĭmŭs","ĕrĭtĭs","ĕrunt"] },
+            congiuntivo: { perfetto: ["sĭm","sīs","sĭt","sīmŭs","sītĭs","sint"], piuccheperfetto: ["essĕm","essēs","essĕt","essēmŭs","essētĭs","essent"] }
+        };
+        return `${part} ${aus[modo][tempo][pIdx]}`;
+    }
+
+    if (modo === "infinito") {
+        if (tempo === "presente") return diatesi === "attivo" ? v.infinito : (c === "terza" ? rPres + "ī" : rPres + {prima:"ārī",seconda:"ērī",quarta:"īrī"}[c]);
+        if (tempo === "perfetto") return rPerf + "issĕ";
+        if (tempo === "futuro") return diatesi === "attivo" ? rSupRoot + "ūrŭm essĕ" : v.supino + " īrī";
+    }
+
+    if (modo === "imperativo") {
+        if (tempo === "presente") return rPres + (persona === "2s" ? {prima:"ā",seconda:"ē",terza:"ĕ",quarta:"ī"}[c] : {prima:"ātĕ",seconda:"ētĕ",terza:"ĭtĕ",quarta:"ītĕ"}[c]);
+        if (tempo === "futuro") {
+            const suf = {prima:"ātō", seconda:"ētō", terza:"ĭtō", quarta:"ītō"}[c];
+            if (persona === "2s" || persona === "3s") return rPres + suf;
+            if (persona === "2p") return rPres + suf + "tĕ";
+            if (persona === "3p") return rPres + (c === "prima" ? "antō" : (c === "quarta" ? "ĭuntō" : "untō"));
+        }
+    }
+
+    if (diatesi === "attivo") {
+        if (tempo === "perfetto") return rPerf + ["ī", "istī", "ĭt", "ĭmŭs", "istĭs", "ērunt"][pIdx];
+        if (tempo === "piuccheperfetto") {
+            if (modo === "indicativo") return rPerf + ["ĕrăm", "ĕrās", "ĕrăt", "ĕrāmŭs", "ĕrātĭs", "ĕrant"][pIdx];
+            if (modo === "congiuntivo") return rPerf + ["issĕm", "issēs", "issĕt", "issēmŭs", "issētĭs", "issent"][pIdx];
+        }
+        if (tempo === "futuro anteriore") return rPerf + ["ĕrō", "ĕrĭs", "ĕrĭt", "ĕrĭmŭs", "ĕrĭtĭs", "ĕrint"][pIdx];
+    }
+
+    const des = {
+        indicativo: {
+            presente: { attivo: { prima: ["ō","ās","ăt","āmŭs","ātĭs","ant"], seconda: ["ĕō","ēs","ĕt","ēmŭs","ētĭs","ent"], terza: ["ō","ĭs","ĭt","ĭmŭs","ĭtĭs","unt"], quarta: ["ĭō","īs","ĭt","īmŭs","ītĭs","ĭunt"] }, passivo: { prima: ["ŏr","ārĭs","ātŭr","āmŭr","āmĭnī","antŭr"], seconda: ["ĕŏr","ērĭs","ētŭr","ēmŭr","ēmĭnī","entŭr"], terza: ["ŏr","ĕrĭs","ĭtŭr","ĭmŭr","ĭmĭnī","untŭr"], quarta: ["ĭŏr","īrĭs","ītŭr","īmŭr","īmĭnī","ĭuntŭr"] } },
+            imperfetto: { attivo: { prima: ["ābăm","ābās","ābăt","ābāmŭs","ābātĭs","ābant"], seconda: ["ēbăm","ēbās","ēbăt","ēbāmŭs","ēbātĭs","ēbant"], terza: ["ēbăm","ēbās","ēbăt","ēbāmŭs","ēbātĭs","ēbant"], quarta: ["ĭēbăm","ĭēbās","ĭēbăt","ĭēbāmŭs","ĭēbātĭs","ĭēbant"] }, passivo: { prima: ["ābăr","ābārĭs","ābātŭr","ābāmŭr","ābāmĭnī","ābantŭr"], seconda: ["ēbăr","ēbārĭs","ēbātŭr","ēbāmŭr","ēbāmĭnī","ēbantŭr"], terza: ["ēbăr","ēbārĭs","ēbātŭr","ēbāmŭr","ēbāmĭnī","ēbantŭr"], quarta: ["ĭēbăr","ĭēbārĭs","ĭēbātŭr","ĭēbāmŭr","ĭēbāmĭnī","ĭēbantŭr"] } },
+            futuro: { attivo: { prima: ["ābō","ābĭs","ābĭt","ābĭmŭs","ābĭtĭs","ābunt"], seconda: ["ēbō","ēbĭs","ēbĭt","ēbĭmŭs","ēbĭtĭs","ēbunt"], terza: ["ăm","ēs","ĕt","ēmŭs","ētĭs","ent"], quarta: ["ĭăm","ĭēs","ĭĕt","ĭēmŭs","ĭētĭs","ĭent"] }, passivo: { prima: ["ābŏr","ābĕrĭs","ābĭtŭr","ābĭmŭr","ābĭmĭnī","ābuntŭr"], seconda: ["ēbŏr","ēbĕrĭs","ēbĭtŭr","ēbĭmŭr","ēbĭmĭnī","ēbuntŭr"], terza: ["ăr","ērĭs","ētŭr","ēmŭr","ēmĭnī","entŭr"], quarta: ["ĭăr","ĭērĭs","ĭētŭr","ĭēmŭr","ĭēmĭnī","ĭentŭr"] } }
+        }
+    };
+
+    if (modo === "congiuntivo") {
+        if (tempo === "presente") return rPres + {attivo:{prima:["ĕm","ēs","ĕt","ēmŭs","ētĭs","ent"],seconda:["ĕăm","ĕās","ĕăt","ĕāmŭs","ĕātĭs","ĕant"],terza:["ăm","ās","ăt","āmŭs","ātĭs","ant"],quarta:["ĭăm","ĭās","ĭăt","ĭāmŭs","ĭātĭs","ĭant"]},passivo:{prima:["ĕr","ērĭs","ētŭr","ēmŭr","ēmĭnī","entŭr"],seconda:["ĕăr","ĕārĭs","ĕātŭr","ĕāmŭr","ĕāmĭnī","ĕantŭr"],terza:["ăr","ārĭs","ātŭr","āmŭr","amini","antŭr"],quarta:["ĭăr","ĭārĭs","ĭātŭr","ĭāmŭr","ĭāmĭnī","ĭantŭr"]}}[diatesi][c][pIdx];
+        if (tempo === "imperfetto") return v.infinito + (diatesi === "attivo" ? ["m","s","t","mŭs","tĭs","nt"] : ["r","rĭs","tŭr","mŭr","mĭnī","ntŭr"])[pIdx];
+        if (tempo === "perfetto") return rPerf + ["ĕrĭm", "ĕrĭs", "ĕrĭt", "ĕrĭmŭs", "ĕrĭtĭs", "ĕrint"][pIdx];
+    }
+    try { 
+        let res = des[modo][tempo][diatesi][c][pIdx];
+        // Se la desinenza inizia con la vocale tematica già presente in rPres, evita duplicazioni
+        return rPres + res;
+    } catch(e) { return "N/A"; }
+}
+
+function generaDati(fConId, fDiaId, idStats) {
+    const fCon = document.getElementById(fConId).value;
+    const fDia = document.getElementById(fDiaId).value;
+    let pool = (fCon === "tutte") ? Object.values(coniugazioni).flat() : coniugazioni[fCon];
+    const v = pool[Math.floor(Math.random()*pool.length)];
+    let m = ["indicativo", "congiuntivo", "infinito", "imperativo"][Math.floor(Math.random()*4)];
+    let d = (v.coniugazione === "sum") ? "attivo" : ((fDia === "entrambe") ? (Math.random() > 0.5 ? "attivo" : "passivo") : fDia);
+    let t = ["presente", "imperfetto", "futuro", "perfetto", "piuccheperfetto", "futuro anteriore"][Math.floor(Math.random()*6)];
+    let p = ["1s", "2s", "3s", "1p", "2p", "3p"][Math.floor(Math.random()*6)];
+
+    if (m === "infinito") { p = "na"; t = ["presente", "perfetto", "futuro"][Math.floor(Math.random()*3)]; }
+    else if (m === "imperativo") { t = Math.random() > 0.5 ? "presente" : "futuro"; d = "attivo"; p = (t === "futuro") ? ["2s","3s","2p","3p"][Math.floor(Math.random()*4)] : (Math.random() > 0.5 ? "2s" : "2p"); }
+    else if (m === "congiuntivo" && (t === "futuro" || t === "futuro anteriore")) t = "presente";
+
+    let parola = "N/A";
+    if (v.coniugazione === "sum") parola = coniuga_sum(m, t, p);
+    else if (v.coniugazione === "mista") parola = coniuga_terza_io(v, m, t, p, d);
+    else if (v.coniugazione === "atematico") parola = coniuga_atematici(v, m, t, p, d);
+    else parola = coniuga(v, m, t, p, d);
+
+    const idForma = `${v.pres1}_${m}_${t}_${p}_${d}`;
+    if (parola === "N/A" || parola === undefined || parola.includes("undefined") || stats[idStats].indovinati.has(idForma)) {
+        if (stats[idStats].indovinati.size > 500) stats[idStats].indovinati.clear(); 
+        return generaDati(fConId, fDiaId, idStats);
+    }
+    
+    return { parola, v, m, t, p, d, idForma };
+}
+
+function updateStatsUI(id) {
+    document.getElementById(`stats${id}`).innerText = `Risposte: ${stats[id].esatte} / ${stats[id].totali}`;
+}
+
+function nuovaAnalisi() {
+    sfidaA = generaDati("fConA", "fDiaA", 'A');
+    document.getElementById("dispVerbA").innerText = sfidaA.parola;
+    document.getElementById("dispParaA").innerText = `Paradigma: ${sfidaA.v.pres1}, ${sfidaA.v.pres2}, ${sfidaA.v.perfetto}, ${sfidaA.v.supino}, ${sfidaA.v.infinito}`;
+    document.getElementById("esitoA").value = "";
+}
+
+function validaAnalisi() {
+    if(!sfidaA || document.getElementById("esitoA").value !== "") return;
+    const m = document.getElementById("rModA").value, t = document.getElementById("rTemA").value, d = document.getElementById("rDiaA").value, p = document.getElementById("rPerA").value;
+    const corretto = (m === sfidaA.m) && (p === sfidaA.p) && (t === sfidaA.t) && (d === sfidaA.d);
+    
+    stats.A.totali++;
+    if(corretto) {
+        stats.A.esatte++;
+        stats.A.indovinati.add(sfidaA.idForma);
+    }
+    updateStatsUI('A');
+
+    const e = document.getElementById("esitoA");
+    const m_cap = sfidaA.m.charAt(0).toUpperCase() + sfidaA.m.slice(1);
+    const pers = labelsPersona[sfidaA.p] ? " " + labelsPersona[sfidaA.p] : "";
+    e.value = corretto ? "CORRETTO! ✨" : `ERRATO! Era: ${m_cap} ${sfidaA.t} ${sfidaA.d}${pers}`;
+    e.style.color = corretto ? "var(--success)" : "var(--error)";
+}
+
+function nuovaProduzione() {
+    sfidaP = generaDati("fConP", "fDiaP", 'P');
+    let inf = sfidaP.v.infinito.charAt(0).toUpperCase() + sfidaP.v.infinito.slice(1);
+    let modo_t = sfidaP.m.charAt(0).toUpperCase() + sfidaP.m.slice(1);
+    let d_t = sfidaP.d !== 'na' ? " " + sfidaP.d : "";
+    let p_t = labelsPersona[sfidaP.p] ? " " + labelsPersona[sfidaP.p] : "";
+    document.getElementById("descP").innerHTML = `${inf} : ${modo_t} ${sfidaP.t}${d_t}${p_t}`;
+    document.getElementById("dispParaP").innerText = `Paradigma: ${sfidaP.v.pres1}, ${sfidaP.v.pres2}, ${sfidaP.v.perfetto}, ${sfidaP.v.supino}, ${sfidaP.v.infinito}`;
+    document.getElementById("inputP").value = "";
+    document.getElementById("esitoP").value = "";
+    document.getElementById("inputP").focus();
+}
+
+function validaProduzione() {
+    if(!sfidaP || document.getElementById("esitoP").value !== "") return;
+    const risp = rimuoviQuantita(document.getElementById("inputP").value.trim().toLowerCase());
+    const soluzione = rimuoviQuantita(sfidaP.parola.toLowerCase());
+    const e = document.getElementById("esitoP");
+    
+    const corretto = (risp === soluzione);
+    
+    stats.P.totali++;
+    if(corretto) {
+        stats.P.esatte++;
+        stats.P.indovinati.add(sfidaP.idForma);
+    }
+    updateStatsUI('P');
+
+    e.value = corretto ? "ESATTO! 🏆" : `SBAGLIATO! Era: ${sfidaP.parola}`;
+    e.style.color = corretto ? "var(--success)" : "var(--error)";
+}
+
+function checkFieldsA() {
+    const m = document.getElementById("rModA").value;
+    document.getElementById("rPerA").disabled = (m === "infinito");
+    document.getElementById("rDiaA").disabled = (m === "imperativo");
+}
+
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+        const esitoA = document.getElementById("esitoA").value;
+        const esitoP = document.getElementById("esitoP").value;
+        if (document.activeElement.id === 'inputP') {
+            if (esitoP !== "") nuovaProduzione(); else validaProduzione();
+        } else if (document.getElementById('colA').contains(document.activeElement) || document.activeElement.tagName === 'SELECT') {
+             if (esitoA !== "") nuovaAnalisi(); else validaAnalisi();
+        }
+    }
+});
+
+window.onload = () => { nuovaAnalisi(); nuovaProduzione(); };
+</script>
+</body>
+</html>

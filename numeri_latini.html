@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="la">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Numeri Romani - Sistema Imperiale</title>
+    <style>
+        * { box-sizing: border-box; }
+        
+        body { 
+            font-family: 'Georgia', serif; 
+            background: #f4f1ea;
+            background-image: radial-gradient(#d2c1a5 0.5px, transparent 0.5px);
+            background-size: 20px 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0; padding: 20px;
+        }
+
+        .container { 
+            background: #fff;
+            padding: 40px;
+            border-radius: 4px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border: 2px solid #c5a059;
+            text-align: center;
+            width: 100%;
+            max-width: 700px;
+        }
+
+        h2 { color: #8b0000; margin-top: 0; text-transform: uppercase; letter-spacing: 3px; border-bottom: 2px solid #8b0000; display: inline-block; padding-bottom: 5px; }
+
+        .input-group { display: flex; flex-direction: column; gap: 15px; margin-top: 30px; }
+
+        input { 
+            padding: 15px; border: 1px solid #c5a059; background: #fffcf5;
+            font-size: 1.3rem; text-align: center; outline: none; color: #333;
+        }
+
+        button { 
+            padding: 15px; cursor: pointer; background-color: #8b0000; color: #f4f1ea; 
+            border: none; font-weight: bold; text-transform: uppercase; transition: all 0.3s;
+        }
+
+        button:hover { background-color: #a00000; }
+
+        #display-risultato {
+            margin-top: 30px; padding: 25px;
+            border-top: 2px double #c5a059; background: #fdfbf7;
+        }
+
+        #risultato-parole {
+            font-size: 2.2rem; font-weight: bold; color: #333;
+            margin-bottom: 10px; font-style: italic; word-wrap: break-word;
+        }
+
+        #risultato-romano {
+            font-size: 1.6rem; color: #c5a059; font-family: 'Times New Roman', serif;
+            letter-spacing: 4px; word-wrap: break-all; line-height: 2.5;
+        }
+
+        .vinc { text-decoration: overline; display: inline-block; }
+
+        #btn-info {
+            background: none; color: #c5a059; border: 1px solid #c5a059;
+            padding: 8px 15px; margin-top: 25px; font-size: 0.8rem;
+            cursor: pointer; text-transform: uppercase;
+        }
+
+        #info-box {
+            display: none; margin-top: 20px; padding: 25px;
+            background: #fffcf5; border: 1px dashed #c5a059;
+            text-align: left; font-size: 0.95rem; color: #444; line-height: 1.6;
+        }
+
+        .info-title { color: #8b0000; font-weight: bold; text-transform: uppercase; border-bottom: 1px solid #c5a059; display: block; margin-bottom: 10px; margin-top: 15px; }
+        b { color: #8b0000; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>NUMERI ROMANI</h2>
+        
+        <div class="input-group">
+            <input type="number" id="mioInput" placeholder="Inserisci un numero" min="1">
+            <button onclick="esegui()">Traduci</button>
+        </div>
+
+        <div id="display-risultato">
+            <div id="risultato-parole">...</div>
+            <div id="risultato-romano"></div>
+        </div>
+
+        <button id="btn-info" onclick="toggleInfo()">Mostra Procedimento</button>
+        
+        <div id="info-box">
+            <span class="info-title">Simboli Numerici (Cifre)</span>
+            Il sistema utilizza sette segni fondamentali: <b>I</b>(1), <b>V</b>(5), <b>X</b>(10), <b>L</b>(50), <b>C</b>(100), <b>D</b>(500), <b>M</b>(1000).
+            <br><br>
+            <b>Regole delle Lineette:</b>
+            <ul>
+                <li><b>Trattino Sopra (Vinculum):</b> Una linea orizzontale sopra il simbolo moltiplica il valore per <b>1.000</b>.</li>
+                <li><b>Linee Laterali:</b> Due barre verticali ai lati moltiplicano il valore per <b>100.000</b>.</li>
+                <li><b>Cornice:</b> Linee sopra e ai lati moltiplicano il valore per <b>1.000.000</b>.</li>
+            </ul>
+
+            <span class="info-title">Composizione in Lettere (Sistema)</span>
+            La conversione testuale segue una scomposizione a blocchi:
+            <ul>
+                <li><b>Migliaia:</b> Si indica il numero di blocchi da mille seguito dal termine <i>milia</i> (es. 3000 = tria milia).</li>
+                <li><b>Centinaia/Decine/Unità:</b> Si procede in ordine decrescente unendo i nomi corrispondenti alle cifre.</li>
+                <li><b>Sottrazione Finale:</b> Per i numeri che terminano con 8 o 9, il sistema non aggiunge unità alla decina, ma sottrae uno o due dall'obiettivo superiore (es. 19 non è "dieci-nove" ma "uno-da-venti").</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        function toggleInfo() {
+            const box = document.getElementById("info-box");
+            box.style.display = box.style.display === "block" ? "none" : "block";
+        }
+
+        function numeroInLatino(n) {
+            const units = ["", "unus", "duo", "tres", "quattuor", "quinque", "sex", "septem", "octo", "novem"];
+            const tens = ["", "decem", "viginti", "triginta", "quadraginta", "quinquaginta", "sexaginta", "septuaginta", "octoginta", "nonaginta"];
+            const cents = ["", "centum", "ducenti", "trecenti", "quadringenti", "quingenti", "sescenti", "septingenti", "octingenti", "nongenti"];
+
+            if (n === 0) return "";
+            if (n === 1000) return "mille";
+            if (n < 10) return units[n];
+            if (n < 20) {
+                if (n === 18) return "duodeviginti";
+                if (n === 19) return "undeviginti";
+                const specials = ["decem", "undecim", "duodecim", "tredecim", "quattuordecim", "quindecim", "sedecim", "septendecim"];
+                return specials[n-10];
+            }
+            if (n < 100) {
+                let u = n % 10;
+                let t = Math.floor(n / 10);
+                if (u === 8 && t < 9) return "duode" + tens[t+1];
+                if (u === 9 && t < 9) return "unde" + tens[t+1];
+                return tens[t] + (u !== 0 ? " " + units[u] : "");
+            }
+            if (n < 1000) {
+                let r = n % 100;
+                let c = Math.floor(n / 100);
+                return cents[c] + (r !== 0 ? " " + numeroInLatino(r) : "");
+            }
+            let m = Math.floor(n / 1000);
+            let r = n % 1000;
+            let mText = (m === 1) ? "mille" : numeroInLatino(m) + " milia";
+            return mText + (r !== 0 ? " " + numeroInLatino(r) : "");
+        }
+
+        function convertiInRomano(num) {
+            if (num <= 0) return "";
+            const mappa = { M: 1000, CM: 900, D: 500, CD: 400, C: 100, XC: 90, L: 50, XL: 40, X: 10, IX: 9, V: 5, IV: 4, I: 1 };
+            if (num >= 4000) {
+                let m = Math.floor(num / 1000);
+                let r = num % 1000;
+                return `<span class="vinc">${convertiInRomano(m)}</span>` + convertiInRomano(r);
+            }
+            let res = '';
+            for (let i in mappa) {
+                while (num >= mappa[i]) { res += i; num -= mappa[i]; }
+            }
+            return res;
+        }
+
+        function esegui() {
+            const val = parseInt(document.getElementById("mioInput").value);
+            const outputP = document.getElementById("risultato-parole");
+            const outputR = document.getElementById("risultato-romano");
+
+            if (isNaN(val) || val < 1) {
+                outputP.innerText = "Numerus non est iustus";
+                outputR.innerText = "";
+                return;
+            }
+            outputP.innerText = numeroInLatino(val);
+            outputR.innerHTML = convertiInRomano(val);
+        }
+
+        document.getElementById("mioInput").addEventListener("keypress", (e) => { if (e.key === "Enter") esegui(); });
+    </script>
+</body>
+</html>
