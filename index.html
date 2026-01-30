@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Corso di Lingua Latina | Home</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --accent: #e67e22;
+            --light: #ecf0f1;
+            --text: #333;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text);
+            margin: 0;
+            background-color: #f4f4f4;
+        }
+
+        header {
+            background: var(--primary);
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+            border-bottom: 5px solid var(--accent);
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 2rem auto;
+            padding: 0 20px;
+        }
+
+        .quote {
+            font-style: italic;
+            text-align: center;
+            background: white;
+            padding: 1rem;
+            border-left: 5px solid var(--accent);
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card h3 {
+            color: var(--primary);
+            border-bottom: 2px solid var(--light);
+            padding-bottom: 0.5rem;
+        }
+
+        .card ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .card ul li {
+            margin: 10px 0;
+        }
+
+        .card ul li a {
+            text-decoration: none;
+            color: var(--accent);
+            font-weight: bold;
+        }
+
+        .card ul li a:hover {
+            text-decoration: underline;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 2rem;
+            background: white;
+        }
+
+        th, td {
+            padding: 12px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            background: var(--primary);
+            color: white;
+            margin-top: 3rem;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>🏛️ Lingua Latina: Corso Completo</h1>
+    <p>Dalle origini di Roma alla padronanza dei classici</p>
+</header>
+
+<div class="container">
+    <div class="quote">
+        <p>"Non scholae, sed vitae discimus." — Seneca</p>
+    </div>
+
+    <section>
+        <h2>📂 Indice del Corso</h2>
+        <div class="grid">
+            <div class="card">
+                <h3>1. Le Basi</h3>
+                <ul>
+                    <li><a href="verbi3.html">I verbi</a></li>
+                    <li><a href="Odi.html">Le Odi di Orazio</a></li>
+                    <li><a href="numeri_latini.html">I numeri romani</a></li>
+                </ul>
+            </div>
+
+            <div
